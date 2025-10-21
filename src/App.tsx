@@ -29,7 +29,7 @@ const AppRoutes = () => {
   return (
     <div className="flex min-h-screen">
       {isAuthenticated && <Navbar />}
-      <main className="flex-1 p-8 lg:ml-64">
+      <main className="flex-1 p-8 pt-20 md:pt-8 lg:ml-64">
         <Routes>
           <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
           <Route

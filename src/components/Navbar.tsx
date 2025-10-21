@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Building2, Map, MapPin, Users, UserCircle, BarChart3, LogOut } from 'lucide-react';
+import { Building2, Map, MapPin, Users, UserCircle, BarChart3, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 
 const Navbar = () => {
   const location = useLocation();
@@ -29,7 +30,8 @@ const Navbar = () => {
     { path: '/territoires', label: 'Territoires', icon: MapPin },
     { path: '/villes', label: 'Villes', icon: MapPin },
     { path: '/clients', label: 'Clients', icon: Users },
-    { path: '/utilisateurs', label: 'Utilisateurs', icon: UserCircle }
+    { path: '/utilisateurs', label: 'Utilisateurs', icon: UserCircle },
+    { path: '/profils', label: 'Profils', icon: UserCircle } // Added Profils for admin
   ];
 
   const franchiseNavItems = [
@@ -41,13 +43,13 @@ const Navbar = () => {
   const navItems = isAdmin ? adminNavItems : franchiseNavItems;
 
   return (
-    <header className="bg-primary h-16 flex items-center justify-between px-6 shadow-lg sticky top-0 z-50">
-      <div className="flex items-center gap-2 text-white">
+    <aside className="w-64 bg-primary text-primary-foreground h-full fixed left-0 top-0 p-4 flex flex-col shadow-lg z-50">
+      <div className="flex items-center gap-2 mb-8">
         <Building2 className="h-8 w-8" />
         <span className="text-2xl font-bold">tawkr</span>
       </div>
 
-      <nav className="flex items-center gap-1 flex-1 mx-8">
+      <nav className="flex flex-col gap-1 flex-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -55,8 +57,8 @@ const Navbar = () => {
             <Link key={item.path} to={item.path}>
               <Button
                 variant="ghost"
-                className={`text-white hover:bg-white/10 transition-colors ${
-                  isActive ? 'bg-white/20' : ''
+                className={`w-full justify-start text-primary-foreground hover:bg-primary/90 transition-colors ${
+                  isActive ? 'bg-primary/80' : ''
                 }`}
               >
                 <Icon className="h-4 w-4 mr-2" />
@@ -67,19 +69,19 @@ const Navbar = () => {
         })}
       </nav>
 
-      <div className="flex items-center gap-4">
+      <div className="mt-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="text-white hover:bg-white/10">
+            <Button variant="ghost" className="w-full justify-start text-primary-foreground hover:bg-primary/90">
               <UserCircle className="h-5 w-5 mr-2" />
-              {user?.name}
+              <span className="truncate">{user?.nom_us} {user?.prenom_us}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" side="right" className="w-56">
             <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-muted-foreground">
-              {user?.email}
+              {user?.email_us}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-muted-foreground">
               Rôle: {isAdmin ? 'Administrateur' : 'Franchisé'}
@@ -92,7 +94,7 @@ const Navbar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </header>
+    </aside>
   );
 };
 

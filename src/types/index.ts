@@ -1,90 +1,11 @@
-export interface City {
-  Bureau: string;
-  "Code INSEE": string;
-  Ville: string;
-  Commentaires: string;
-  "Code Postal": string;
-  Département: string;
-  Cantons: string;
-  Distance: string;
-  "Temps de trajet": string;
-  Région: string;
-  "Taux de résidence principale": string;
-  "Total Mandays disponible": string;
-  "Mandays High": string;
-  "Mandays Middle+": string;
-  "Mandays Middle": string;
-  "Mandays Social": string;
-  "Disponible campagne CRF ?": string;
-  "Disponible autre campagne ?": string;
-  MC: string;
-  Campagne: string;
-  "Réservation Mois+1 (= à venir)": string;
-  "MC.1": string;
-  "Campagne.1": string;
-  "Réservation Mois N et N-1 (= en cours et passé)": string;
-  "Last sales CRF": string;
-  "Last sales ACF": string;
-  "Last sales MDM": string;
-  "Last sales WWF": string;
-  "Last sales other": string;
-  "Prochaine date disponible CRF": string;
-  "Prochaine date disponible ACF": string;
-  "Prochaine date disponible MDM": string;
-  "Prochaine date disponible WWF": string;
-  "Prochaine date disponible autre campagne": string;
-}
-
-export interface Franchise {
-  id: string;
-  name: string;
-  manager: string;
-  contact: string;
-  address?: string;
-  cityId?: string;
-  status: 'active' | 'inactive';
-}
-
-export interface Campaign {
-  id: string;
-  name: string;
-  description?: string;
-  startDate: string;
-  endDate: string;
-  managerId?: string;
-  territoryIds: string[];
-  franchiseIds: string[];
-  status: 'draft' | 'active' | 'completed' | 'suspended';
-  validationStatus?: 'pending' | 'approved' | 'rejected'; // Added for admin validation
-}
-
-export interface Territory {
-  id: string;
-  code: string;
-  name: string;
-  region?: string;
-  managerId?: string;
-  franchiseId?: string;
-  status: 'active' | 'inactive';
-}
-
-export interface Client {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  cityId?: string;
-  territoryId?: string;
-  franchiseId?: string;
-  status: 'active' | 'inactive';
-}
-
 export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'admin' | 'franchise';
-  status: 'active' | 'inactive';
+  id_us: string;
+  nom_us: string;
+  prenom_us: string;
+  email_us: string;
+  mdp_us: string;
+  fonction_us: string;
+  profil_us: string; // Refers to Profil.code_prof
   notifications?: Notification[]; // Added for user notifications
 }
 
@@ -96,11 +17,72 @@ export interface Notification {
   timestamp: string;
 }
 
+export interface Profil {
+  code_prof: string;
+  libelle_prof: 'Admin' | 'Franchisé';
+}
+
+export interface Franchise {
+  id_franch: string;
+  nom_proprio_franch: string;
+  prenom_proprio_franch: string;
+  email_proprio_franch: string;
+  localisation_franch: string;
+  statut_franch: string;
+  territory_ids: string[]; // Added for consistency with MCD
+}
+
+export interface Territory {
+  id_terr: string;
+  nom_ville_terr: string;
+  nb_logements_terr: number;
+  bx_resid_principale_terr: number;
+  tot_mandays_terr: number;
+  tot_mandays_high_terr: number;
+  tot_mandays_middle_plus_terr: number;
+  tot_mandays_midlle_terr: number;
+  tot_mandays_social_terr: number;
+  tps_trajet_bur_terr: string;
+  dist_bur_terr: string;
+  statut_terr: 'fermé' | 'attribué' | 'en attente de validation';
+  id_vil: string; // Refers to City.id_vil
+  campagne_ids: string[]; // Refers to Campaign.id_camp
+}
+
+export interface City {
+  id_vil: string;
+  nom_vil: string;
+  code_postal_vil: string;
+  cantons_vil: string;
+  num_departement_vil: string;
+  nom_departement_vil: string;
+  region_vil: string;
+}
+
+export interface Campaign {
+  id_camp: string;
+  nom_camp: string; // Renamed from nom_client_camp
+  type_camp: 'associatif' | 'privé';
+  date_debut_camp: string;
+  date_fin_camp: string;
+  id_clt: string; // Refers to Client.id_clt
+  id_terr: string; // Refers to Territory.id_terr
+  validationStatus?: 'approved' | 'pending' | 'rejected';
+}
+
+export interface Client {
+  id_clt: string;
+  nom_clt: string;
+  statut_clt: 'actif' | 'inactif';
+  duree_jachere_clt: number;
+}
+
 export interface AppData {
-  villes: City[];
+  users: User[];
+  profils: Profil[];
   franchises: Franchise[];
-  campagnes: Campaign[];
   territoires: Territory[];
+  villes: City[];
+  campagnes: Campaign[];
   clients: Client[];
-  utilisateurs: User[];
 }

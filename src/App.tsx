@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DataProvider } from "@/contexts/DataContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
-import Dashboard from "@/components/Dashboard";
+import DashboardAdmin from "@/components/DashboardAdmin";
+import DashboardFranchise from "@/components/DashboardFranchise";
 import Login from "@/pages/Login";
 import Franchises from "@/pages/Franchises";
 import Campagnes from "@/pages/Campagnes";
@@ -14,6 +15,7 @@ import Territoires from "@/pages/Territoires";
 import Villes from "@/pages/Villes";
 import Clients from "@/pages/Clients";
 import Utilisateurs from "@/pages/Utilisateurs";
+import Profils from "@/pages/Profils"; // Import Profils component
 import ProtectedRoute from "@/components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import ImportData from "./pages/ImportData"; // Import ImportData component
@@ -22,19 +24,20 @@ import CampaignValidationOverview from "./pages/CampaignValidationOverview"; // 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
-    <>
+    <div className="flex min-h-screen">
       {isAuthenticated && <Navbar />}
-      <main>
+      <main className="flex-1 p-8 lg:ml-64">
         <Routes>
           <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                {user?.profil_us === "admin" && <DashboardAdmin />}
+                {user?.profil_us === "franchise" && <DashboardFranchise />}
               </ProtectedRoute>
             }
           />
@@ -87,6 +90,14 @@ const AppRoutes = () => {
         }
           />
           <Route
+        path="/profils"
+        element={
+          <ProtectedRoute adminOnly>
+            <Profils />
+          </ProtectedRoute>
+        }
+      />
+          <Route
         path="/import-data"
         element={
           <ProtectedRoute adminOnly>
@@ -105,15 +116,15 @@ const AppRoutes = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-    </>
+    </div>
   );
 };
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <DataProvider>
+      <DataProvider> {/* DataProvider should wrap AuthProvider */}
+        <AuthProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -121,8 +132,8 @@ const App = () => (
               <AppRoutes />
             </div>
           </BrowserRouter>
-        </DataProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </DataProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

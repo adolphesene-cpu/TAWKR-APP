@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
+import { User, Profil } from '@/types';
+import { initialData } from '../data';
+import { useData } from './DataContext'; // Import useData
 
 interface AuthContextType {
   user: User | null;
@@ -11,24 +13,27 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Comptes de test (en production, utiliser une vraie authentification)
 const TEST_ACCOUNTS = [
   {
-    id: '1',
-    email: 'admin@tawkr.com',
-    password: 'admin123',
-    name: 'Administrateur',
-    role: 'admin' as const,
-    status: 'active' as const
+    id_us: 'test-admin',
+    nom_us: 'Admin',
+    prenom_us: '',
+    email_us: 'admin@tawkr.app',
+    mdp_us: 'admin123',
+    fonction_us: 'Administrateur',
+    profil_us: 'admin',
+    notifications: [],
   },
   {
-    id: '2',
-    email: 'franchise@tawkr.com',
-    password: 'franchise123',
-    name: 'Franchisé',
-    role: 'franchise' as const,
-    status: 'active' as const
-  }
+    id_us: 'test-franchise',
+    nom_us: 'Franchisé',
+    prenom_us: '',
+    email_us: 'franchise@tawkr.app',
+    mdp_us: 'franchise123',
+    fonction_us: 'Franchisé',
+    profil_us: 'franchise',
+    notifications: [],
+  },
 ];
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -44,6 +49,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return null;
   });
 
+  const { data } = useData(); // Use data from DataContext
+
   useEffect(() => {
     if (user) {
       sessionStorage.setItem('tawkr-auth-user', JSON.stringify(user));
@@ -53,23 +60,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [user]);
 
   const login = async (email: string, password: string) => {
-    // Rechercher le compte correspondant
-    const account = TEST_ACCOUNTS.find(
-      acc => acc.email === email && acc.password === password
+    // Tenter de se connecter avec les comptes de test d'abord
+    const testUser = TEST_ACCOUNTS.find(
+      (acc) => acc.email_us === email && acc.mdp_us === password
     );
 
-    if (!account) {
+    if (testUser) {
+      setUser(testUser);
+      return { success: true };
+    }
+
+    // Si pas un compte de test, tenter de se connecter avec les données chargées
+    // const foundUser = data.users.find(
+    //   (u) => u.email_us === email && u.mdp_us === password
+    // );
+
+    if (!testUser) {
       return { success: false, error: 'Email ou mot de passe incorrect' };
     }
 
-    const { password: _, ...userWithoutPassword } = account;
-    setUser(userWithoutPassword);
-    return { success: true };
+    // setUser(foundUser);
+    // return { success: true };
   };
 
   const logout = () => {
     setUser(null);
   };
+
+  const isAdmin = user ? data.profils.find((p) => p.code_prof === user.profil_us)?.libelle_prof === 'Admin' : false; // Use data.profils
 
   return (
     <AuthContext.Provider
@@ -78,7 +96,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         logout,
         isAuthenticated: !!user,
-        isAdmin: user?.role === 'admin'
+        isAdmin,
       }}
     >
       {children}
@@ -88,8 +106,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

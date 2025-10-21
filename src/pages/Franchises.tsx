@@ -15,38 +15,55 @@ const Franchises = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingFranchise, setEditingFranchise] = useState<Franchise | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    manager: '',
-    contact: '',
-    address: '',
-    cityId: '',
-    status: 'active' as 'active' | 'inactive'
+    nom_proprio_franch: '',
+    prenom_proprio_franch: '',
+    email_proprio_franch: '',
+    localisation_franch: '',
+    statut_franch: 'active' as 'active' | 'inactive',
+    territory_ids: [] as string[], // Added
   });
 
   const columns: Column<Franchise>[] = [
-    { key: 'name', label: 'Nom' },
-    { key: 'manager', label: 'Responsable' },
-    { key: 'contact', label: 'Contact' },
+    { key: 'nom_proprio_franch', label: 'Nom Propriétaire' },
+    { key: 'prenom_proprio_franch', label: 'Prénom Propriétaire' },
+    { key: 'email_proprio_franch', label: 'Email Propriétaire' },
+    { key: 'localisation_franch', label: 'Localisation' },
     {
-      key: 'status',
+      key: 'statut_franch',
       label: 'Statut',
       render: (franchise) => (
-        <Badge variant={franchise.status === 'active' ? 'default' : 'secondary'}>
-          {franchise.status === 'active' ? 'Actif' : 'Inactif'}
+        <Badge variant={franchise.statut_franch === 'active' ? 'default' : 'secondary'}>
+          {franchise.statut_franch === 'active' ? 'Actif' : 'Inactif'}
         </Badge>
-      )
-    }
+      ),
+    },
+    {
+      key: 'territory_ids',
+      label: 'Territoires Associés',
+      render: (franchise) => (
+        <div className="flex flex-wrap gap-1">
+          {franchise.territory_ids && franchise.territory_ids.length > 0 ? (
+            franchise.territory_ids.map((id) => {
+              const territory = data.territoires.find((t) => t.id_terr === id);
+              return territory ? <Badge key={id}>{territory.nom_ville_terr}</Badge> : null;
+            })
+          ) : (
+            <Badge variant="secondary">Aucun</Badge>
+          )}
+        </div>
+      ),
+    },
   ];
 
   const handleAdd = () => {
     setEditingFranchise(null);
     setFormData({
-      name: '',
-      manager: '',
-      contact: '',
-      address: '',
-      cityId: '',
-      status: 'active'
+      nom_proprio_franch: '',
+      prenom_proprio_franch: '',
+      email_proprio_franch: '',
+      localisation_franch: '',
+      statut_franch: 'active',
+      territory_ids: [],
     });
     setIsDialogOpen(true);
   };
@@ -54,37 +71,37 @@ const Franchises = () => {
   const handleEdit = (franchise: Franchise) => {
     setEditingFranchise(franchise);
     setFormData({
-      name: franchise.name,
-      manager: franchise.manager,
-      contact: franchise.contact,
-      address: franchise.address || '',
-      cityId: franchise.cityId || '',
-      status: franchise.status
+      nom_proprio_franch: franchise.nom_proprio_franch,
+      prenom_proprio_franch: franchise.prenom_proprio_franch,
+      email_proprio_franch: franchise.email_proprio_franch,
+      localisation_franch: franchise.localisation_franch || '',
+      statut_franch: franchise.statut_franch,
+      territory_ids: franchise.territory_ids || [],
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (franchise: Franchise) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer ${franchise.name} ?`)) {
-      deleteFranchise(franchise.id);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer ${franchise.nom_proprio_franch} ${franchise.prenom_proprio_franch} ?`)) {
+      deleteFranchise(franchise.id_franch);
       toast.success('Franchisé supprimé avec succès');
     }
   };
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.manager || !formData.contact) {
+    if (!formData.nom_proprio_franch || !formData.prenom_proprio_franch || !formData.email_proprio_franch) {
       toast.error('Veuillez remplir tous les champs obligatoires');
       return;
     }
 
     if (editingFranchise) {
-      updateFranchise(editingFranchise.id, {
+      updateFranchise(editingFranchise.id_franch, {
         ...editingFranchise,
-        ...formData
+        ...formData,
       });
       toast.success('Franchisé modifié avec succès');
     } else {
-      addFranchise(formData);
+      addFranchise(formData as Omit<Franchise, 'id_franch'>);
       toast.success('Franchisé ajouté avec succès');
     }
 
@@ -104,7 +121,7 @@ const Franchises = () => {
         onAdd={handleAdd}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        searchKeys={['name', 'manager', 'contact']}
+        searchKeys={['nom_proprio_franch', 'prenom_proprio_franch', 'email_proprio_franch', 'localisation_franch']}
         addLabel="Nouveau franchisé"
       />
 
@@ -118,78 +135,78 @@ const Franchises = () => {
           
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Nom *</Label>
+              <Label htmlFor="nom_proprio_franch">Nom Propriétaire *</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Nom du franchisé"
+                id="nom_proprio_franch"
+                value={formData.nom_proprio_franch}
+                onChange={(e) => setFormData({ ...formData, nom_proprio_franch: e.target.value })}
+                placeholder="Nom du propriétaire"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="manager">Responsable *</Label>
+              <Label htmlFor="prenom_proprio_franch">Prénom Propriétaire *</Label>
               <Input
-                id="manager"
-                value={formData.manager}
-                onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
-                placeholder="Nom du responsable"
+                id="prenom_proprio_franch"
+                value={formData.prenom_proprio_franch}
+                onChange={(e) => setFormData({ ...formData, prenom_proprio_franch: e.target.value })}
+                placeholder="Prénom du propriétaire"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="contact">Contact *</Label>
+              <Label htmlFor="email_proprio_franch">Email Propriétaire *</Label>
               <Input
-                id="contact"
-                value={formData.contact}
-                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                placeholder="Email ou téléphone"
+                id="email_proprio_franch"
+                value={formData.email_proprio_franch}
+                onChange={(e) => setFormData({ ...formData, email_proprio_franch: e.target.value })}
+                placeholder="Email du propriétaire"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="address">Adresse</Label>
+              <Label htmlFor="localisation_franch">Localisation</Label>
               <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Adresse complète"
+                id="localisation_franch"
+                value={formData.localisation_franch}
+                onChange={(e) => setFormData({ ...formData, localisation_franch: e.target.value })}
+                placeholder="Localisation du franchisé"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="cityId">Ville</Label>
+              <Label htmlFor="statut_franch">Statut</Label>
               <Select
-                value={formData.cityId}
-                onValueChange={(value) => setFormData({ ...formData, cityId: value })}
+                value={formData.statut_franch}
+                onValueChange={(value: 'active' | 'inactive') =>
+                  setFormData({ ...formData, statut_franch: value })
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une ville" />
+                  <SelectValue placeholder="Sélectionner un statut" />
                 </SelectTrigger>
                 <SelectContent>
-                  {data.villes.map((city) => (
-                    <SelectItem key={city["Code INSEE"]} value={city["Code INSEE"]}>
-                      {city.Ville}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="active">Actif</SelectItem>
+                  <SelectItem value="inactive">Inactif</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="status">Statut</Label>
+              <Label htmlFor="territory_ids">Territoires Associés</Label>
               <Select
-                value={formData.status}
-                onValueChange={(value: 'active' | 'inactive') =>
-                  setFormData({ ...formData, status: value })
-                }
+                value={formData.territory_ids.length > 0 ? formData.territory_ids[0] : ''} // Only display first for now
+                onValueChange={(value) => setFormData({ ...formData, territory_ids: [value] })}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Sélectionner un territoire" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Actif</SelectItem>
-                  <SelectItem value="inactive">Inactif</SelectItem>
+                  {data.territoires.map((territory) => (
+                    <SelectItem key={territory.id_terr} value={territory.id_terr}>
+                      {territory.nom_ville_terr}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

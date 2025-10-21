@@ -85,8 +85,8 @@ const Login = () => {
           <div className="mt-6 p-4 bg-muted/50 rounded-lg space-y-2">
             <p className="text-sm font-medium text-center mb-2">Comptes de test :</p>
             <div className="space-y-1 text-xs">
-              <p><strong>Admin :</strong> admin@tawkr.com / admin123</p>
-              <p><strong>Franchisé :</strong> franchise@tawkr.com / franchise123</p>
+              <p><strong>Admin :</strong> admin@tawkr.app / admin123</p>
+              <p><strong>Franchisé :</strong> franchise@tawkr.app / franchise123</p>
             </div>
           </div>
         </CardContent>

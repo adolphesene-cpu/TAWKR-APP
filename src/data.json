@@ -1,0 +1,90 @@
+{
+  "users": [
+    {
+      "id_us": "user1",
+      "nom_us": "Doe",
+      "prenom_us": "John",
+      "email_us": "john.doe@example.com",
+      "mdp_us": "password123",
+      "fonction_us": "Sales",
+      "profil_us": "admin_profile"
+    },
+    {
+      "id_us": "user2",
+      "nom_us": "Smith",
+      "prenom_us": "Jane",
+      "email_us": "jane.smith@example.com",
+      "mdp_us": "password123",
+      "fonction_us": "Manager",
+      "profil_us": "franchise_profile"
+    }
+  ],
+  "profils": [
+    {
+      "code_prof": "admin_profile",
+      "libelle_prof": "Admin"
+    },
+    {
+      "code_prof": "franchise_profile",
+      "libelle_prof": "Franchisé"
+    }
+  ],
+  "franchises": [
+    {
+      "id_franch": "franch1",
+      "nom_proprio_franch": "Dubois",
+      "prenom_proprio_franch": "Paul",
+      "email_proprio_franch": "paul.dubois@franchise.com",
+      "localisation_franch": "Paris",
+      "statut_franch": "Actif"
+    }
+  ],
+  "territoires": [
+    {
+      "id_terr": "terr1",
+      "nom_ville_terr": "Lyon",
+      "nb_logements_terr": 1500,
+      "bx_resid_principale_terr": 0.75,
+      "tot_mandays_terr": 120,
+      "tot_mandays_high_terr": 40,
+      "tot_mandays_middle_plus_terr": 30,
+      "tot_mandays_midlle_terr": 30,
+      "tot_mandays_social_terr": 20,
+      "tps_trajet_bur_terr": "30 min",
+      "dist_bur_terr": "15 km",
+      "statut_terr": "attribué",
+      "id_vil": "vil1",
+      "campagne_ids": ["camp1"]
+    }
+  ],
+  "villes": [
+    {
+      "id_vil": "vil1",
+      "nom_vil": "Lyon",
+      "code_postal_vil": "69000",
+      "cantons_vil": "Lyon 1",
+      "num_departement_vil": "69",
+      "nom_departement_vil": "Rhône",
+      "region_vil": "Auvergne-Rhône-Alpes"
+    }
+  ],
+  "campagnes": [
+    {
+      "id_camp": "camp1",
+      "nom_client_camp": "Client A",
+      "type_camp": "privé",
+      "date_debut_camp": "2023-01-01",
+      "date_fin_camp": "2023-03-31",
+      "id_clt": "clt1",
+      "id_terr": "terr1"
+    }
+  ],
+  "clients": [
+    {
+      "id_clt": "clt1",
+      "nom_clt": "Client A",
+      "statut_clt": "actif",
+      "duree_jachere_clt": 6
+    }
+  ]
+}

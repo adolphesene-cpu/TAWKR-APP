@@ -14,41 +14,32 @@ const Clients = () => {
   const { data, addClient, updateClient, deleteClient } = useData();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    cityId: '',
-    territoryId: '',
-    franchiseId: '',
-    status: 'active' as 'active' | 'inactive'
+  const [formData, setFormData] = useState<Omit<Client, 'id_clt'>>({
+    nom_clt: '',
+    statut_clt: 'actif',
+    duree_jachere_clt: 0,
   });
 
   const columns: Column<Client>[] = [
-    { key: 'name', label: 'Nom' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Téléphone' },
+    { key: 'nom_clt', label: 'Nom Client' },
     {
-      key: 'status',
+      key: 'statut_clt',
       label: 'Statut',
       render: (client) => (
-        <Badge variant={client.status === 'active' ? 'default' : 'secondary'}>
-          {client.status === 'active' ? 'Actif' : 'Inactif'}
+        <Badge variant={client.statut_clt === 'actif' ? 'default' : 'secondary'}>
+          {client.statut_clt === 'actif' ? 'Actif' : 'Inactif'}
         </Badge>
-      )
-    }
+      ),
+    },
+    { key: 'duree_jachere_clt', label: 'Durée Jachère (jours)' },
   ];
 
   const handleAdd = () => {
     setEditingClient(null);
     setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      cityId: '',
-      territoryId: '',
-      franchiseId: '',
-      status: 'active'
+      nom_clt: '',
+      statut_clt: 'actif',
+      duree_jachere_clt: 0,
     });
     setIsDialogOpen(true);
   };
@@ -56,32 +47,28 @@ const Clients = () => {
   const handleEdit = (client: Client) => {
     setEditingClient(client);
     setFormData({
-      name: client.name,
-      email: client.email || '',
-      phone: client.phone || '',
-      cityId: client.cityId || '',
-      territoryId: client.territoryId || '',
-      franchiseId: client.franchiseId || '',
-      status: client.status
+      nom_clt: client.nom_clt,
+      statut_clt: client.statut_clt,
+      duree_jachere_clt: client.duree_jachere_clt,
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (client: Client) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer le client ${client.name} ?`)) {
-      deleteClient(client.id);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le client ${client.nom_clt} ?`)) {
+      deleteClient(client.id_clt);
       toast.success('Client supprimé avec succès');
     }
   };
 
   const handleSubmit = () => {
-    if (!formData.name) {
-      toast.error('Veuillez remplir le champ Nom');
+    if (!formData.nom_clt) {
+      toast.error('Veuillez remplir le champ Nom Client');
       return;
     }
 
     if (editingClient) {
-      updateClient(editingClient.id, {
+      updateClient(editingClient.id_clt, {
         ...editingClient,
         ...formData
       });
@@ -107,7 +94,7 @@ const Clients = () => {
         onAdd={handleAdd}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        searchKeys={['name', 'email', 'phone']}
+        searchKeys={['nom_clt', 'statut_clt']}
         addLabel="Nouveau client"
       />
 
@@ -121,109 +108,42 @@ const Clients = () => {
           
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Nom *</Label>
+              <Label htmlFor="nom_clt">Nom Client *</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                id="nom_clt"
+                value={formData.nom_clt}
+                onChange={(e) => setFormData({ ...formData, nom_clt: e.target.value })}
                 placeholder="Nom du client"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="Email du client"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="phone">Téléphone</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="Téléphone du client"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="cityId">Ville</Label>
+              <Label htmlFor="statut_clt">Statut</Label>
               <Select
-                value={formData.cityId}
-                onValueChange={(value) => setFormData({ ...formData, cityId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une ville" />
-                </SelectTrigger>
-                <SelectContent>
-                  {data.villes.map((city) => (
-                    <SelectItem key={city["Code INSEE"]} value={city["Code INSEE"]}>
-                      {city.Ville}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="territoryId">Territoire</Label>
-              <Select
-                value={formData.territoryId}
-                onValueChange={(value) => setFormData({ ...formData, territoryId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un territoire" />
-                </SelectTrigger>
-                <SelectContent>
-                  {data.territoires.map((territory) => (
-                    <SelectItem key={territory.id} value={territory.id}>
-                      {territory.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="franchiseId">Franchise</Label>
-              <Select
-                value={formData.franchiseId}
-                onValueChange={(value) => setFormData({ ...formData, franchiseId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une franchise" />
-                </SelectTrigger>
-                <SelectContent>
-                  {data.franchises.map((franchise) => (
-                    <SelectItem key={franchise.id} value={franchise.id}>
-                      {franchise.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="status">Statut</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value: 'active' | 'inactive') =>
-                  setFormData({ ...formData, status: value })
+                value={formData.statut_clt}
+                onValueChange={(value: 'actif' | 'inactif') =>
+                  setFormData({ ...formData, statut_clt: value })
                 }
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Sélectionner un statut" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Actif</SelectItem>
-                  <SelectItem value="inactive">Inactif</SelectItem>
+                  <SelectItem value="actif">Actif</SelectItem>
+                  <SelectItem value="inactif">Inactif</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="duree_jachere_clt">Durée Jachère (jours)</Label>
+              <Input
+                id="duree_jachere_clt"
+                type="number"
+                value={formData.duree_jachere_clt}
+                onChange={(e) => setFormData({ ...formData, duree_jachere_clt: parseFloat(e.target.value) })}
+                placeholder="Durée de la jachère en jours"
+              />
             </div>
           </div>
 

@@ -50,22 +50,22 @@ const DashboardAdmin = () => {
     },
     {
       title: 'Utilisateurs',
-      value: data.utilisateurs.length,
+      value: data.users.length,
       icon: UserCircle,
       route: '/utilisateurs',
       color: 'text-primary'
     }
   ];
 
-  const pendingCampaigns = data.campagnes.filter(c => c.validationStatus === 'pending');
+  const pendingCampagnes = data.campagnes.filter(c => c.validationStatus === 'pending');
 
   if (isAdmin) {
     stats.push({
       title: 'Campagnes en attente',
-      value: pendingCampaigns.length,
+      value: pendingCampagnes.length,
       icon: Map,
       route: '/campaign-validation-overview',
-      color: 'text-yellow-600' // Using a warning color for pending items
+      color: 'text-yellow-600'
     });
   }
 
@@ -84,10 +84,9 @@ const DashboardAdmin = () => {
         )}
       </div>
 
-      {/* Moved CampaignValidationList into its own card for consistency and better layout */}
-      {isAdmin && pendingCampaigns.length > 0 && (
+      {isAdmin && pendingCampagnes.length > 0 && (
         <div className="grid grid-cols-1 mb-8">
-          <CampaignValidationList campaigns={pendingCampaigns} />
+          <CampaignValidationList campaigns={pendingCampagnes} />
         </div>
       )}
 
@@ -131,13 +130,13 @@ const DashboardAdmin = () => {
               <div className="space-y-2">
                 {data.campagnes.slice(0, 5).map((campaign) => (
                   <div
-                    key={campaign.id}
+                    key={campaign.id_camp}
                     className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                     onClick={() => navigate('/campagnes')}
                   >
-                    <div className="font-medium">{campaign.name}</div>
+                    <div className="font-medium">{campaign.nom_client_camp}</div>
                     <div className="text-sm text-muted-foreground">
-                      {campaign.startDate} - {campaign.endDate}
+                      {campaign.date_debut_camp} - {campaign.date_fin_camp}
                     </div>
                   </div>
                 ))}
@@ -150,7 +149,7 @@ const DashboardAdmin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
-              Franchisés actifs
+              Franchisés
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -160,18 +159,15 @@ const DashboardAdmin = () => {
               </p>
             ) : (
               <div className="space-y-2">
-                {data.franchises
-                  .filter(f => f.status === 'active')
-                  .slice(0, 5)
-                  .map((franchise) => (
+                {data.franchises.slice(0, 5).map((franchise) => (
                     <div
-                      key={franchise.id}
+                      key={franchise.id_franch}
                       className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                       onClick={() => navigate('/franchises')}
                     >
-                      <div className="font-medium">{franchise.name}</div>
+                      <div className="font-medium">{franchise.nom_proprio_franch}</div>
                       <div className="text-sm text-muted-foreground">
-                        {franchise.manager}
+                        {franchise.prenom_proprio_franch}
                       </div>
                     </div>
                   ))}
@@ -184,7 +180,7 @@ const DashboardAdmin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
-              Territoires actifs
+              Territoires
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -194,18 +190,15 @@ const DashboardAdmin = () => {
               </p>
             ) : (
               <div className="space-y-2">
-                {data.territoires
-                  .filter(t => t.status === 'active')
-                  .slice(0, 5)
-                  .map((territory) => (
+                {data.territoires.slice(0, 5).map((territory) => (
                     <div
-                      key={territory.id}
+                      key={territory.id_terr}
                       className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                       onClick={() => navigate('/territoires')}
                     >
-                      <div className="font-medium">{territory.name}</div>
+                      <div className="font-medium">{territory.nom_ville_terr}</div>
                       <div className="text-sm text-muted-foreground">
-                        {territory.region}
+                        {data.villes.find(v => v.id_vil === territory.id_vil)?.region_vil}
                       </div>
                     </div>
                   ))}
@@ -218,7 +211,7 @@ const DashboardAdmin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
-              Villes gérées
+              Villes
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -230,13 +223,13 @@ const DashboardAdmin = () => {
               <div className="space-y-2">
                 {data.villes.slice(0, 5).map((city) => (
                   <div
-                    key={city["Code INSEE"]}
+                    key={city.id_vil}
                     className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                     onClick={() => navigate('/villes')}
                   >
-                    <div className="font-medium">{city.Ville}</div>
+                    <div className="font-medium">{city.nom_vil}</div>
                     <div className="text-sm text-muted-foreground">
-                      {city.Département}
+                      {city.nom_departement_vil}
                     </div>
                   </div>
                 ))}
@@ -249,7 +242,7 @@ const DashboardAdmin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
-              Clients récents
+              Clients
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -261,13 +254,13 @@ const DashboardAdmin = () => {
               <div className="space-y-2">
                 {data.clients.slice(0, 5).map((client) => (
                   <div
-                    key={client.id}
+                    key={client.id_clt}
                     className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                     onClick={() => navigate('/clients')}
                   >
-                    <div className="font-medium">{client.name}</div>
+                    <div className="font-medium">{client.nom_clt}</div>
                     <div className="text-sm text-muted-foreground">
-                      {client.email}
+                      {client.nom_clt} {/* Pas d'email dans la nouvelle interface client */}
                     </div>
                   </div>
                 ))}
@@ -280,28 +273,25 @@ const DashboardAdmin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserCircle className="h-5 w-5 text-primary" />
-              Utilisateurs actifs
+              Utilisateurs
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {data.utilisateurs.length === 0 ? (
+            {data.users.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
                 Aucun utilisateur pour le moment
               </p>
             ) : (
               <div className="space-y-2">
-                {data.utilisateurs
-                  .filter(u => u.status === 'active')
-                  .slice(0, 5)
-                  .map((user) => (
+                {data.users.slice(0, 5).map((user) => (
                     <div
-                      key={user.id}
+                      key={user.id_us}
                       className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                       onClick={() => navigate('/utilisateurs')}
                     >
-                      <div className="font-medium">{user.name}</div>
+                      <div className="font-medium">{user.nom_us} {user.prenom_us}</div>
                       <div className="text-sm text-muted-foreground">
-                        {user.role === 'admin' ? 'Administrateur' : 'Franchisé'}
+                        {data.profils.find(p => p.code_prof === user.profil_us)?.libelle_prof}
                       </div>
                     </div>
                   ))}

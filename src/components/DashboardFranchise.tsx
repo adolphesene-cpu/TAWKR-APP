@@ -12,16 +12,16 @@ const DashboardFranchise = () => {
   const navigate = useNavigate();
 
   // Filtrer les données pour le franchisé connecté
-  const myCampaigns = data.campagnes.filter(c => c.franchiseIds.includes(user?.id || ''));
-  const myTerritories = data.territoires.filter(t => t.franchiseId === user?.id);
+  const myCampaigns = data.campagnes.filter(c => c.id_clt === user?.id_us);
+  const myTerritories = data.territoires.filter(t => user?.territory_ids?.includes(t.id_terr));
   
-  const currentUser = data.utilisateurs.find(u => u.id === user?.id);
+  const currentUser = data.users.find(u => u.id_us === user?.id_us);
   const unreadNotifications = currentUser?.notifications?.filter(n => !n.read) || [];
 
   const handleMarkAllAsRead = () => {
     if (currentUser) {
       const updatedNotifications = currentUser.notifications?.map(n => ({ ...n, read: true })) || [];
-      updateUser(currentUser.id, { ...currentUser, notifications: updatedNotifications });
+      updateUser(currentUser.id_us, { ...currentUser, notifications: updatedNotifications });
     }
   };
 
@@ -52,10 +52,10 @@ const DashboardFranchise = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
+        <h1 className="text-3xl font-bold">
           Tableau de bord Franchisé
         </h1>
-        <p className="text-muted-foreground">Bienvenue, {user?.name}</p>
+        <p className="text-muted-foreground">Bienvenue, {user?.nom_us} {user?.prenom_us}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -98,13 +98,13 @@ const DashboardFranchise = () => {
               <div className="space-y-2">
                 {myCampaigns.slice(0, 5).map((campaign) => (
                   <div
-                    key={campaign.id}
+                    key={campaign.id_camp}
                     className="p-3 rounded-lg bg-secondary hover:bg-accent/10 cursor-pointer transition-colors"
                     onClick={() => navigate('/campagnes')}
                   >
-                    <div className="font-medium">{campaign.name}</div>
+                    <div className="font-medium">{campaign.nom_camp}</div>
                     <div className="text-sm text-muted-foreground">
-                      {campaign.startDate} - {campaign.endDate}
+                      {campaign.date_debut_camp} - {campaign.date_fin_camp}
                     </div>
                   </div>
                 ))}

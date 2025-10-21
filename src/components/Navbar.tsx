@@ -109,7 +109,7 @@ const Navbar = () => {
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-4 flex flex-col">
+      <SheetContent side="left" className="w-64 p-4 flex flex-col bg-primary text-primary-foreground">
         <SheetHeader>
           <SheetTitle>Navigation</SheetTitle>
         </SheetHeader>
